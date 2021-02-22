@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from scipy.ndimage import gaussian_filter
 from scipy.signal import find_peaks
 
-class Line:
+class GeneticAlghoritm:
     """
     """
     
@@ -69,7 +69,7 @@ class Line:
         cv2.imwrite(f"{IMG_FOLDER}/gen_line_epoch_{p}.jpg", image)
 
     
-    def geneticAlghoritm(self, y1, y2):
+    def run(self, y1, y2):
         """
         """
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
@@ -280,14 +280,14 @@ IMAGE_PATH = '7.jpg'
 
 est_time = time.time()
 image = cv2.imread(IMAGE_PATH)
-lineObj = Line(image, POP_NUM, DELTAX, EPOCH)
+lineObj = GeneticAlghoritm(image, POP_NUM, DELTAX, EPOCH)
 doc = lineObj.find_peaks()
 gen_line_list = pymp.shared.list()
 draw_list_lines = pymp.shared.list()
 with pymp.Parallel(4) as p:
     for line in p.range(len(doc)-1):
         # st_time = time.time()
-        gen_line, draw_list = lineObj.geneticAlghoritm(y1=doc[line], y2=doc[line+1])
+        gen_line, draw_list = lineObj.run(y1=doc[line], y2=doc[line+1])
         # print("function time=", time.time()-st_time)
         gen_line_list.append(gen_line.A)
         draw_list_lines.append(draw_list)
