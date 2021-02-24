@@ -22,7 +22,7 @@ def fitness(image, delta_x, length, individ):
 
 
 def find_peaks_(image):
-    """Calculates ranges of random numbers for our individuals."""
+    """Calculates ranges of random numbers for our individs."""
 
     height, width = image.shape[:2]
     img_matrix = [sum(i)/len(i) for i in image]
