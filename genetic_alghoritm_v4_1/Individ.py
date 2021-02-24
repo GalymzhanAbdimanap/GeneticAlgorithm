@@ -2,8 +2,7 @@ import numpy as np
 import random
 
 class Individ:
-    """
-    """
+    """Generate a new individ."""
     
     def __init__(self, y1, y2, length):   
         self.length = length   
