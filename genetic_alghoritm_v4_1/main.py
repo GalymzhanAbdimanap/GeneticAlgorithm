@@ -5,9 +5,9 @@ from SimpleSegmentationGA import SimpleSegmentationGA
 
 if __name__ == '__main__':
 
-    # HYPER PARAMETERS FOR GENETIC ALGHORITM.
+    # Hyper parameters for genetic alghoritms.
     POP_NUM=80
-    DELTAX=50 # VALUE OF H.
+    DELTAX=50 # Value of h.
     EPOCH=100
     IMAGE_PATH = '7.jpg'
 
