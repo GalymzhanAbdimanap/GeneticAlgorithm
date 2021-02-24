@@ -2,9 +2,10 @@ from abc import abstractmethod, abstractproperty
 
 
 class GeneticAlghoritm():
+    """Genetic Algorithm Interface."""
 
     @abstractmethod
-    def createPopulation(self):
+    def create_population(self):
         pass
 
     @abstractmethod
