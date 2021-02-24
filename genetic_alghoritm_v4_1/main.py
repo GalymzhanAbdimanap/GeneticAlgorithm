@@ -28,7 +28,7 @@ if __name__ == '__main__':
     start_time = time.time()
     # Run genetic algorithm.
     lines = run(ssga, peaks, EPOCH)
-    print('Time run=', time.time()-start_time)
+    print('Time =', time.time()-start_time)
 
-    # Draw the result of the genetic alghoritm.
+    # Draw the result of the genetic alghoritm.  lines[-1] -> result of last epoch.
     drawLines(image, lines[-1], DELTAX)
