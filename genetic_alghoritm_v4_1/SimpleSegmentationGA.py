@@ -90,7 +90,7 @@ class SimpleSegmentationGA(GeneticAlghoritm):
         """Sorts by fit and selects the best pop_num individs."""
 
         for i in range(self.pop_num*3):                                    # It is important. Next, we will rank the array of parents and children in ascending order of survivability (sum (fit)).
-            self.par_and_sons[i].fit = fitness(self.gray, self.delta_x, self.lenght, self.par_and_sons[i].A)
+            self.par_and_sons[i].fit = SimpleSegmentationGA.fitness_function(self.gray, self.delta_x, self.lenght, self.par_and_sons[i].A)
 
         #  Sort.
         self.par_and_sons = sorted(self.par_and_sons, key=lambda individ: individ.fit)   
