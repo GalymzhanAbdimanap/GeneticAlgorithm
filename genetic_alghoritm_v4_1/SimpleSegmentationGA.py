@@ -13,7 +13,7 @@ class SimpleSegmentationGA(GeneticAlghoritm):
 
     def __init__(self, pop_num, lenght, delta_x, gray):
         self.pop_num = pop_num
-        self.lenght = lenght
+        self.lenght = lenght    # Length of individ.
         self.delta_x =  delta_x # value of h
         self.gray = 256 - gray
         
