@@ -9,114 +9,102 @@ from utils import *
 
 
 class SimpleSegmentationGA(GeneticAlghoritm):
-    """"""
+    """Genetic Algorithm Implementation."""
 
-    def __init__(self, pop_num, length, deltaX, epoch, gray):
+    def __init__(self, pop_num, lenght, delta_x, gray):
         self.pop_num = pop_num
-        self.length = length
-        self.deltaX =  deltaX # value of h
-        self.epoch = epoch
+        self.lenght = lenght
+        self.delta_x =  delta_x # value of h
         self.gray = 256 - gray
         
 
 
-    def createPopulation(self, y1, y2):
-        """"""
+    def create_population(self, y1, y2):
+        """Creates a population, Dad, Mom and 4 sons"""
 
         self.y1 = y1
         self.y2 = y2
-        self.population = []                    #Объявляем массив "В", в котором будем хранить популяцию из 10 индивидов.
-        for i in range(self.pop_num):            #Цикл
-            c=Individ(self.y1, self.y2, self.length)                #В переменную "с" запихнулся (срандомился) новёхонький уникальненький индивид. (на каждой итерации цикла новый)
-            self.population.append(c)           #А тут мы добавляем i-го уникального индивида к массиву (заполняем нашу популяцию)                      #Создаём экземпляр класса. Т.е. создаём нашу популяцию из 10 рандомных индивидов
+        self.population = []                    # Declare an array "population" in which we will store a population of 5 individuals.
+        for i in range(self.pop_num):           
+            c=Individ(self.y1, self.y2, self.lenght)                # Create a new individual.
+            self.population.append(c)           # Add the i-th unique individual to the array (fill in our population)
+                                  
         
-        self.Mother = Individ(self.y1, self.y2, self.length)                     #Инициализируем переменные, с которыми будем работать: маму, папу, 4 сыночков..
-        self.Father = Individ(self.y1, self.y2, self.length)                     
-        self.Son1 = Individ(self.y1, self.y2, self.length)                       
-        self.Son2 = Individ(self.y1, self.y2, self.length)
-        self.Son3 = Individ(self.y1, self.y2, self.length)
-        self.Son4 = Individ(self.y1, self.y2, self.length)
-        self.ParAndSons = []                        #..и массив индивидов "Родители+Дети" в котором будем хранить
+        self.mother = Individ(self.y1, self.y2, self.lenght)                     # Initialize the variables with which we will work: mom, dad, 4 sons ..
+        self.father = Individ(self.y1, self.y2, self.lenght)                     
+        self.son1 = Individ(self.y1, self.y2, self.lenght)                       
+        self.son2 = Individ(self.y1, self.y2, self.lenght)
+        self.son3 = Individ(self.y1, self.y2, self.lenght)
+        self.son4 = Individ(self.y1, self.y2, self.lenght)
+        self.par_and_sons = []                                                   #.. and an array of individs "Parents and Children" in which we will store
         
-        for j in range(self.pop_num*3):                    #Тут мы "придаём форму" нашему массиву "Родителей и детей". Инициализируем его рандомными индивидами.
-            self.ParAndSons.append(Individ(self.y1, self.y2, self.length))       #Чтобы в дальнейшем иметь возможность напрямую работать с этим массивом с помощью наших атрибутов (А, fit)
-                                            #Рандомные значения, которыми мы забили этот массив, нам не помешают. Т.к. мы поэлементно все элементы этого массива забьём актуальными данными вручную по ходу программы.
+        for j in range(self.pop_num*3):                    # Initialize our array of "Parents and Sons" with random individs.
+            self.par_and_sons.append(Individ(self.y1, self.y2, self.lenght))       
         
 
     def cross(self):
-        """"""
+        """Crosses the best individs with each other."""
 
-        for i in range(self.pop_num):                #Заносим в первые 10 элементов массива "Отцы и дети" всю нашу входную популяцию.
-            self.ParAndSons[i].A=self.population[i].A.copy()
+        for i in range(self.pop_num):                # Put in the first pop_num elements of the "Parents and Sons" array our entire input population.
+            self.par_and_sons[i].A=self.population[i].A.copy()
 
         random.shuffle(self.population) # 
 
-        tt=0                                       #Счётчик, который нужён для реализации небанального скрещивания.
-        for s in range(0,self.pop_num,2):                    #Цикл. От 0 до 10 с шагом 2. Т.е. тут мы берём 5 пар родителей.
-            self.Mother.A=self.population[tt+int(self.pop_num/2)].A      #Пусть мамами у нас будут последние 5 индивидов нашей популяции (т.к. они у нас в последствии всегда будут отранжированы (наши популяции), беря последние 5, мы тем самым берём лучших представителей и с ними работаем. Чего с посредственностей-то взять, ну.
-            self.Father.A=self.population[tt].A                           #А папами пусть будет first 5 индивидов нашей популяции 
+        tt=0                                       # The counter that is needed to implement a non-trivial crossing.
+        for s in range(0,self.pop_num,2):                    # From 0 to pop_num with step 2. That is. here we take pop_num / 2 pairs of parents.
+            self.mother.A=self.population[tt+int(self.pop_num/2)].A      # Let the last pop_num / 2 individuals of our population be our mothers.
+            self.father.A=self.population[tt].A                           # And let first pop_num / 2 individuals of our population be dads.
         
-            tt=tt+1    # Двигаем наш счётчик ручками.
+            tt=tt+1    
             ran=random.random()
 
-            for n in range(self.length):
+            for n in range(self.lenght):              # Crossover.
                 if random.random()>0.5:
-                    self.Son1.A[n] = self.Father.A[n]
-                    self.Son2.A[self.length-1-n] = self.Father.A[n]
-                    self.Son3.A[n] = self.Mother.A[n]
-                    self.Son4.A[self.length-1-n] = self.Mother.A[n]
+                    self.son1.A[n] = self.father.A[n]
+                    self.son2.A[self.lenght-1-n] = self.father.A[n]
+                    self.son3.A[n] = self.mother.A[n]
+                    self.son4.A[self.lenght-1-n] = self.mother.A[n]
                 else:
-                    self.Son1.A[n] = self.Mother.A[n]
-                    self.Son2.A[self.length-1-n] = self.Mother.A[n]
-                    self.Son3.A[n] = self.Father.A[n]
-                    self.Son4.A[self.length-1-n] = self.Father.A[n]
+                    self.son1.A[n] = self.mother.A[n]
+                    self.son2.A[self.lenght-1-n] = self.mother.A[n]
+                    self.son3.A[n] = self.father.A[n]
+                    self.son4.A[self.lenght-1-n] = self.father.A[n]
 
-            self.ParAndSons[self.pop_num+2*s].A = self.Son1.A.copy()
-            self.ParAndSons[self.pop_num+2*s+1].A = self.Son2.A.copy()
-            self.ParAndSons[self.pop_num+2*s+2].A = self.Son3.A.copy()
-            self.ParAndSons[self.pop_num+2*s+3].A = self.Son4.A.copy()
-
-    # def mutation(self):
-    #     """"""
-
-    #     for r in range(self.pop_num*3, 5):                # Это мутации. Чтобы доказать крутость нашего скрещивания мы минимизируем мутации.
-    #         for w in range(0,self.length,2):              # Т.к. при большой вероятности мутации верное решение находится даже при совершенно неработающем механизме скрещивания.
-    #             if random.random()<0.25:                  #Поэтому мы мутируем только одного (17-го) индивида. Т.е. мы с вероятностью 0.00001
-    #                 self.ParAndSons[r].A[w] = self.ParAndSons[r].A[w] + 2  # Смещаем на 2 пикселя.
-    #             elif random.random()>0.25 and random.random()<0.5:
-    #                 self.ParAndSons[r].A[w] = self.ParAndSons[r].A[w] - 2
-    #         for w in range(1,self.length,2):   
-    #             if random.random()>0.5 and random.random()<0.75:   
-    #                 self.ParAndSons[r].A[w] = self.ParAndSons[r].A[w] + 2
-    #             elif random.random()>0.75 and random.random()<1:
-    #                 self.ParAndSons[r].A[w] = self.ParAndSons[r].A[w] - 2    
+            self.par_and_sons[self.pop_num+2*s].A = self.son1.A.copy()
+            self.par_and_sons[self.pop_num+2*s+1].A = self.son2.A.copy()
+            self.par_and_sons[self.pop_num+2*s+2].A = self.son3.A.copy()
+            self.par_and_sons[self.pop_num+2*s+3].A = self.son4.A.copy()
+   
 
     def mutation(self):
-        """"""
+        """Mutates individuals with a 20% probability."""
 
-        for r in range(self.pop_num*3, 5):                # Это мутации. Чтобы доказать крутость нашего скрещивания мы минимизируем мутации.
-            for w in range(0,self.length):              # Т.к. при большой вероятности мутации верное решение находится даже при совершенно неработающем механизме скрещивания.
-                if random.random()<0.2:                  #Поэтому мы мутируем только одного (17-го) индивида. Т.е. мы с вероятностью 0.00001
-                    self.ParAndSons[r].A[w] = self.ParAndSons[r].A[w] + np.random.randint(-20, 20)  # Смещаем на 2 пикселя.
+        for r in range(self.pop_num*3, 5):                # Mutation.
+            for w in range(0,self.lenght):              
+                if random.random()<0.2:                  
+                    self.par_and_sons[r].A[w] = self.par_and_sons[r].A[w] + np.random.randint(-20, 20)  # Offset + -20 pixels.
  
 
 
     def selection(self):
-        """"""
+        """Sorts by fit and selects the best pop_num individs."""
 
-        for i in range(self.pop_num*3):                     #Это важно. Далее мы будем ранжировать массив отцов и детей в порядке возрастания живучести (суммы (fit)).
-            self.ParAndSons[i].fit = fitness(self.gray, self.deltaX, self.length, self.ParAndSons[i].A)
+        for i in range(self.pop_num*3):                     # It is important. Next, we will rank the array of parents and children in ascending order of survivability (sum (fit)).
+            self.par_and_sons[i].fit = fitness(self.gray, self.delta_x, self.lenght, self.par_and_sons[i].A)
 
-        #  Сортировка.
-        self.ParAndSons = sorted(self.ParAndSons, key=lambda individ: individ.fit)   
-        self.population=self.ParAndSons[:self.pop_num].copy()
+        #  Sort.
+        self.par_and_sons = sorted(self.par_and_sons, key=lambda individ: individ.fit)   
+        self.population=self.par_and_sons[:self.pop_num].copy()
 
 
-    def calc(self):
-        """"""
+    def call(self):
+        """Calls other functions and returns the selected population."""
 
         self.cross()
         self.mutation()
         self.selection()
         
         return  self.population[0]
+
+
+SimpleSegmentationGA.fitness_function = fitness
