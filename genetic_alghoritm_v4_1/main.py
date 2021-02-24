@@ -20,7 +20,7 @@ if __name__ == '__main__':
     length_individ = int(width/DELTAX)
 
     # Calculate the range of random numbers for an individ.
-    peaks = find_peaks_(gray) #[:2]
+    peaks = find_peaks_(gray) 
     
     # Create object of class.
     ssga = SimpleSegmentationGA(POP_NUM, length_individ, DELTAX, gray)
