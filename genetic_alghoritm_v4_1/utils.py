@@ -3,8 +3,10 @@ import random, time
 import cv2 
 from scipy.ndimage import gaussian_filter
 from scipy.signal import find_peaks
+from numba import njit
+import pymp
 
-
+@njit
 def fitness(image, delta_x, length, individ):                      
     """Responsible for calculating the "fit" (counts the amount)."""
     
@@ -34,21 +36,19 @@ def find_peaks_(image):
 
     return maxs
 
-def run(gaObj, peaks, epoch):
-    """Runs a genetic algorithm."""
-
-    gen_lines = []
+def run(gaObj, peaks, epoch, parallel=True, number_cpu=4):
+    """Can choose how to run."""
+   
+    gen_lines = pymp.shared.list()
+    if parallel:
+        with pymp.Parallel(number_cpu) as p:
+            range_peaks = p.range(len(peaks)-1)
+            gen_lines = run_genetic_alghoritm(gaObj, peaks, epoch, range_peaks, gen_lines)
+    else:
+        range_peaks = range(len(peaks)-1)
+        gen_lines = run_genetic_alghoritm(gaObj, peaks, epoch, range_peaks, gen_lines)
+              
     
-    for line in range(len(peaks)-1):
-        gaObj.create_population(peaks[line], peaks[line+1])
-        epoch_line = []
-        for p in range(epoch):  
-            st_time = time.time()                  
-            gen_line = gaObj.call()
-            epoch_line.append(gen_line.A)            # For draw results each epoch, add results of each epoch.
-            print(f'Line = {line}, Epoch = {p}, fit = {gen_line.fit}, Time = {time.time()-st_time}') 
-        
-        gen_lines.append(epoch_line)  
     return np.moveaxis(np.array(gen_lines), 0, 1)    # Swap line and epoch axes.
 
 
@@ -72,3 +72,19 @@ def drawLines(image, lines, delta_x, epoch='last', color=(0,0,255), thickness = 
             preview_point = end_point
 
     cv2.imwrite(f"{IMG_FOLDER}/gen_line{epoch}.jpg", image_copy)
+
+
+def run_genetic_alghoritm(gaObj, peaks, epoch, range_peaks, gen_lines):
+    """Runs a genetic alghoritm."""
+
+    for line in range_peaks:
+        gaObj.create_population(peaks[line], peaks[line+1])
+        epoch_line = pymp.shared.list()
+        for p in range(epoch):  
+            st_time = time.time()                  
+            gen_line = gaObj.call()
+            epoch_line.append(gen_line.A)            # For draw results each epoch, add results of each epoch.
+            print(f'Line = {line}, Epoch = {p}, fit = {gen_line.fit}, Time = {time.time()-st_time}') 
+        gen_lines.append(epoch_line)
+    
+    return gen_lines
