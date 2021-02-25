@@ -52,7 +52,7 @@ def run(gaObj, peaks, epoch, parallel=True, number_cpu=4):
     return np.moveaxis(np.array(gen_lines), 0, 1)    # Swap line and epoch axes.
 
 
-def drawLines(image, lines, delta_x, epoch='last', color=(0,0,255), thickness = 3, IMG_FOLDER='imgs'):
+def draw_lines(image, lines, delta_x, imagename, epoch='last', color=(0,0,255), thickness = 3, IMG_FOLDER='output'):
     """Draws the result of a genetic algorithm."""
     
     image_copy = image.copy()
@@ -70,8 +70,7 @@ def drawLines(image, lines, delta_x, epoch='last', color=(0,0,255), thickness = 
 
             cv2.line(image_copy, start_point, end_point, color, thickness)
             preview_point = end_point
-
-    cv2.imwrite(f"{IMG_FOLDER}/gen_line{epoch}.jpg", image_copy)
+    cv2.imwrite(f"{IMG_FOLDER}/{imagename[:-4]}_gen_line_{epoch}.jpg", image_copy)
 
 
 def run_genetic_alghoritm(gaObj, peaks, epoch, range_peaks, gen_lines):
@@ -88,3 +87,37 @@ def run_genetic_alghoritm(gaObj, peaks, epoch, range_peaks, gen_lines):
         gen_lines.append(epoch_line)
     
     return gen_lines
+
+def crop_lines(image, lines, delta_x, imagename, IMG_FOLDER='crops'):
+    """Crop the lines."""
+
+    for i in range(-1,len(lines)):
+        height, width = image.shape[:2]
+
+        if i == (-1):
+            first_line = [[i*delta_x, 0] for i, el in enumerate(lines[i])]
+        else:
+            first_line = [[i*delta_x, el] for i, el in enumerate(lines[i])]
+
+        first_line = first_line[::-1] # Reverse first line.
+        
+        if i < len(lines)-1:
+            last_line = [[i*delta_x, el] for i, el in enumerate(lines[i+1])]
+        else:
+            last_line = [[i*delta_x, height] for i, el in enumerate(lines[i])]
+
+        points = np.array([first_line + last_line])
+        mask = np.zeros((height, width), dtype=np.uint8)
+        cv2.fillPoly(mask, points, (255))
+
+        res = cv2.bitwise_and(image,image,mask = mask)
+
+        rect = cv2.boundingRect(points) # Returns (x,y,w,h) of the rect
+        im2 = np.full((res.shape[0], res.shape[1], 3), (0, 255, 0), dtype=np.uint8 ) # You can also use other colors or simply load another image of the same size
+        maskInv = cv2.bitwise_not(mask)
+        colorCrop = cv2.bitwise_or(im2,im2,mask = maskInv)
+        finalIm = res + colorCrop
+        cropped = finalIm[rect[1]: rect[1] + rect[3], rect[0]: rect[0] + rect[2]]
+
+        cv2.imwrite(f"{IMG_FOLDER}/croped_{imagename}_{i}.png", cropped)
+
