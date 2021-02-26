@@ -1,9 +1,7 @@
 # Genetic Alghoritm in Python for Segmentation strings in a sheet
 
 1. to run <br>
-```bash
-python main.py
-```<br>
+```bash python main.py```<br>
 
 
 ##### install python requirments
