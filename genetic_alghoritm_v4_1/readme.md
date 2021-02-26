@@ -3,6 +3,16 @@
 1. to run <br>
 ``` python main.py ```<br>
 
+
+##### install python requirments
+```bash
+pip install numpy
+pip install opencv-python
+pip install scipy
+pip install numba
+pip install pymp-pypi
+```
+
 # Result
 ![Image alt](https://github.com/GalymzhanAbdimanap/GeneticAlghoritm/blob/main/genetic_alghoritm_v4_1/output/7_gen_line_last.jpg)
 
