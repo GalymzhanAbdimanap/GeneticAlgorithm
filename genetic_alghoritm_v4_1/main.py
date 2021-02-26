@@ -34,17 +34,19 @@ if __name__ == '__main__':
 
         start_time = time.time()
         # Run genetic algorithm.
-        lines = run(ssga, peaks, EPOCH, parallel=False)
+        lines = run(ssga, peaks, EPOCH, parallel=True)
         print('Time run =', time.time()-start_time)
+
+        last_epoch_lines = sorted(lines[-1], key = lambda x:x[0]) # Sort for crop. Because when using parallel, the lines lose consistency.
 
         start_time = time.time()
         # Draw the result of the genetic alghoritm. lines[-1] -> result of last epoch.
-        draw_lines(image, lines[-1], DELTAX, os.path.basename(imagename))
+        draw_lines(image, last_epoch_lines, DELTAX, os.path.basename(imagename))
         print('Time draw_lines =', time.time()-start_time)
 
         start_time = time.time()
         # Crop the result of genetic alghoritm.
-        crop_lines(image, lines[-1], DELTAX, os.path.basename(imagename))
+        crop_lines(image, last_epoch_lines, DELTAX, os.path.basename(imagename))
         print('Time crop_lines =', time.time()-start_time)
         print('Time for one image =', time.time()-fstart_time)
         
