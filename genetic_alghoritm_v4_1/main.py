@@ -23,7 +23,7 @@ if __name__ == '__main__':
         height, width = image.shape[:2]
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-        # Calculate individ's lenght.
+        # Calculate individ's length.
         length_individ = int(width/DELTAX)
 
         # Calculate the range of random numbers for an individ.
