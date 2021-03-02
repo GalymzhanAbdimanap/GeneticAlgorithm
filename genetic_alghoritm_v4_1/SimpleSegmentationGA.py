@@ -11,9 +11,9 @@ from utils import *
 class SimpleSegmentationGA(GeneticAlgorithm):
     """Genetic Algorithm Implementation."""
 
-    def __init__(self, pop_num, lenght, delta_x, gray):
+    def __init__(self, pop_num, length, delta_x, gray):
         self.pop_num = pop_num
-        self.lenght = lenght    # Length of individ.
+        self.length = length    # Length of individ.
         self.delta_x =  delta_x # Value of h.
         self.gray = 256 - gray
         
@@ -26,20 +26,20 @@ class SimpleSegmentationGA(GeneticAlgorithm):
         self.y2 = y2
         self.population = []                                               # Declare an array "population" in which we will store a population of 5 individuals.
         for i in range(self.pop_num):           
-            c=Individ(self.y1, self.y2, self.lenght)                       # Create a new individual.
+            c=Individ(self.y1, self.y2, self.length)                       # Create a new individual.
             self.population.append(c)                                      # Add the i-th unique individual to the array (fill in our population)
                                   
         
-        self.mother = Individ(self.y1, self.y2, self.lenght)               # Initialize the variables with which we will work: mom, dad, 4 sons ..
-        self.father = Individ(self.y1, self.y2, self.lenght)                     
-        self.son1 = Individ(self.y1, self.y2, self.lenght)                       
-        self.son2 = Individ(self.y1, self.y2, self.lenght)
-        self.son3 = Individ(self.y1, self.y2, self.lenght)
-        self.son4 = Individ(self.y1, self.y2, self.lenght)
+        self.mother = Individ(self.y1, self.y2, self.length)               # Initialize the variables with which we will work: mom, dad, 4 sons ..
+        self.father = Individ(self.y1, self.y2, self.length)                     
+        self.son1 = Individ(self.y1, self.y2, self.length)                       
+        self.son2 = Individ(self.y1, self.y2, self.length)
+        self.son3 = Individ(self.y1, self.y2, self.length)
+        self.son4 = Individ(self.y1, self.y2, self.length)
         self.par_and_sons = []                                             #.. and an array of individs "Parents and Children" in which we will store
         
         for j in range(self.pop_num*3):                                    # Initialize our array of "Parents and Sons" with random individs.
-            self.par_and_sons.append(Individ(self.y1, self.y2, self.lenght))       
+            self.par_and_sons.append(Individ(self.y1, self.y2, self.length))       
         
 
     def cross(self):
@@ -58,17 +58,17 @@ class SimpleSegmentationGA(GeneticAlgorithm):
             tt=tt+1    
             ran=random.random()
 
-            for n in range(self.lenght):                                   # Crossover.
+            for n in range(self.length):                                   # Crossover.
                 if random.random()>0.5:
                     self.son1.A[n] = self.father.A[n]
-                    self.son2.A[self.lenght-1-n] = self.father.A[n]
+                    self.son2.A[self.length-1-n] = self.father.A[n]
                     self.son3.A[n] = self.mother.A[n]
-                    self.son4.A[self.lenght-1-n] = self.mother.A[n]
+                    self.son4.A[self.length-1-n] = self.mother.A[n]
                 else:
                     self.son1.A[n] = self.mother.A[n]
-                    self.son2.A[self.lenght-1-n] = self.mother.A[n]
+                    self.son2.A[self.length-1-n] = self.mother.A[n]
                     self.son3.A[n] = self.father.A[n]
-                    self.son4.A[self.lenght-1-n] = self.father.A[n]
+                    self.son4.A[self.length-1-n] = self.father.A[n]
 
             self.par_and_sons[self.pop_num+2*s].A = self.son1.A.copy()
             self.par_and_sons[self.pop_num+2*s+1].A = self.son2.A.copy()
@@ -80,7 +80,7 @@ class SimpleSegmentationGA(GeneticAlgorithm):
         """Mutates individuals with a 20% probability."""
 
         for r in range(self.pop_num*3, 5):                                 # Mutation.
-            for w in range(0,self.lenght):              
+            for w in range(0,self.length):              
                 if random.random()<0.2:                  
                     self.par_and_sons[r].A[w] = self.par_and_sons[r].A[w] + np.random.randint(-20, 20)  # Offset + -20 pixels.
  
@@ -90,7 +90,7 @@ class SimpleSegmentationGA(GeneticAlgorithm):
         """Sorts by fit and selects the best pop_num individs."""
 
         for i in range(self.pop_num*3):                                    # It is important. Next, we will rank the array of parents and children in ascending order of survivability (sum (fit)).
-            self.par_and_sons[i].fit = SimpleSegmentationGA.fitness_function(self.gray, self.delta_x, self.lenght, self.par_and_sons[i].A)
+            self.par_and_sons[i].fit = SimpleSegmentationGA.fitness_function(self.gray, self.delta_x, self.length, self.par_and_sons[i].A)
 
         #  Sort.
         self.par_and_sons = sorted(self.par_and_sons, key=lambda individ: individ.fit)   
