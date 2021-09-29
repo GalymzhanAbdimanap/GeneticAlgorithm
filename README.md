@@ -1,4 +1,4 @@
-# Genetic Alghoritm in Python for Segmentation strings in a sheet
+# Genetic Algorithm in Python for Segmentation strings in a sheet
 
 1. to run <br>
 ```bash
